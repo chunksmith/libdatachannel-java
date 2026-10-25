@@ -2,6 +2,7 @@
 #include "jni-c-to-java.h"
 
 #include <atomic>
+#include <cstdlib>
 #include <jni.h>
 #include <pthread.h>
 #include <rtc/rtc.h>
@@ -86,6 +87,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
         return JNI_ERR;
     }
     rtcInitLogger(level, &logger_callback);
+    if (const char* threads = getenv("LIBDATACHANNEL_THREAD_POOL_SIZE"))
+        rtcSetThreadPoolSize(static_cast<unsigned int>(atoi(threads)));
     rtcPreload();
     return JNI_VERSION;
 }
